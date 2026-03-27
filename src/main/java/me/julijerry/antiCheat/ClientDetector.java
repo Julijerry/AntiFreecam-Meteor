@@ -135,10 +135,10 @@ public class ClientDetector implements Listener, PluginMessageListener {
         String l2 = normalizeLine(PlainTextComponentSerializer.plainText().serialize(event.line(2)));
         String l3 = normalizeLine(PlainTextComponentSerializer.plainText().serialize(event.line(3)));
 
-        boolean hasMeteor = l0.contains("open-gui")
-                || l0.contains("meteor")
-                || l1.contains("open-commands")
-                || l1.contains("meteor")
+        boolean hasMeteor = l0.contains("open-gui") 
+                || l0.contains("meteor") 
+                || l1.contains("open-commands") 
+                || l1.contains("meteor") 
                 || l2.contains("meteor");
 
         boolean hasFreecam = !l3.equals(VANILLA_SENTINEL) && !l3.equals("key.freecam.toggle");
@@ -155,22 +155,24 @@ public class ClientDetector implements Listener, PluginMessageListener {
         if (channel.equals("minecraft:brand")) {
             String brand = new String(message, StandardCharsets.UTF_8).toLowerCase();
 
-            if (brand.contains("meteor") || brand.contains("wurst")
+            if (brand.contains("meteor") || brand.contains("wurst") 
                     || brand.contains("aristois") || brand.contains("liquidbounce")) {
-                Bukkit.getScheduler().runTask(plugin,
+                Bukkit.getScheduler().runTask(plugin, 
                         () -> punishPlayer(player, "Unzulässiger Client (" + brand.replaceAll("[^a-zA-Z]", "") + ")"));
             }
         }
     }
 
     private void punishPlayer(Player player, String reason) {
-        if (player.hasPermission("essentials.teammode")) {
+        boolean isFreecam = reason.equals("Freecam");
+        String bypassPerm = isFreecam ? "anticheat.freecam.bypass" : "anticheat.client.bypass";
+
+        if (player.hasPermission(bypassPerm)) {
             player.sendMessage("§8[§cAntiCheat§8] §eBypass aktiv. Eigentlicher Grund: " + reason);
             return;
         }
 
         Bukkit.getScheduler().runTask(plugin, () -> {
-            boolean isFreecam = reason.equals("Freecam");
             String punishmentMessage = "§cAntiCheat: Unerlaubte Client-Modifikation (§e" + reason + "§c)";
 
             if (!isFreecam) {
@@ -180,12 +182,12 @@ public class ClientDetector implements Listener, PluginMessageListener {
                 plugin.getLogger().info("Freecam Verdacht bei " + player.getName() + " - Nur Nachricht an Team gesendet.");
             }
 
-            String alertText = isFreecam ? "§enutzt vermutlich Freecam!" : "§cwurde gekickt! Grund: " + reason;
+            String alertText = isFreecam ? "nutzt vermutlich Freecam!" : "wurde gekickt! Grund: " + reason;
             String alertPerm = isFreecam ? "essentials.teammode" : "minergames.alert.anticheat";
 
             for (Player p : Bukkit.getOnlinePlayers()) {
                 if (p.hasPermission(alertPerm)) {
-                    p.sendMessage("§8[§cAntiCheat§8] §e" + player.getName() + " " + alertText);
+                    p.sendMessage("§8[§cAntiCheat§8] §e" + player.getName() + " §c" + alertText);
                 }
             }
         });
