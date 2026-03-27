@@ -1,0 +1,7 @@
+name: AntiCheat
+version: '1.0'
+main: me.julijerry.antiCheat.AntiCheat
+api-version: '1.21'
+authors: [ Julijerry ]
+description: ServerSwitch for Velocity
+website: julijerry.pages.dev
